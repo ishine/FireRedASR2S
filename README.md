@@ -23,8 +23,9 @@ FireRedASR2S is a state-of-the-art (SOTA), industrial-grade, all-in-one ASR syst
 
 
 ## 🔥 News
+- [2026.02.25] 🔥 We release **FireRedASR2-LLM model weights**. [🤗](https://huggingface.co/FireRedTeam/FireRedASR2-LLM) [🤖](https://www.modelscope.cn/models/xukaituo/FireRedASR2-LLM/)
 - [2026.02.13] 🚀 Support TensorRT-LLM inference acceleration for FireRedASR2-AED (contributed by NVIDIA). Benchmark on AISHELL-1 test set shows **12.7x speedup** over PyTorch baseline (single H20).
-- [2026.02.12] We release FireRedASR2S (FireRedASR2-AED, FireRedVAD, FireRedLID, and FireRedPunc) with **model weights and inference code**. Download links below. Technical report and finetuning code coming soon.
+- [2026.02.12] 🔥 We release FireRedASR2S (FireRedASR2-AED, FireRedVAD, FireRedLID, and FireRedPunc) with **model weights and inference code**. Download links below. Technical report and finetuning code coming soon.
 
 
 
@@ -32,7 +33,8 @@ FireRedASR2S is a state-of-the-art (SOTA), industrial-grade, all-in-one ASR syst
 
 |Model|Supported Languages & Dialects|Download|
 |:-------------:|:---------------------------------:|:----------:|
-|FireRedASR2| Chinese (Mandarin and 20+ dialects/accents<sup>*</sup>), English, Code-Switching | [🤗](https://huggingface.co/FireRedTeam/FireRedASR2-AED) \| [🤖](https://www.modelscope.cn/models/xukaituo/FireRedASR2-AED/)|
+|FireRedASR2-LLM| Chinese (Mandarin and 20+ dialects/accents<sup>*</sup>), English, Code-Switching | [🤗](https://huggingface.co/FireRedTeam/FireRedASR2-LLM) \| [🤖](https://www.modelscope.cn/models/xukaituo/FireRedASR2-LLM/)|
+|FireRedASR2-AED| Chinese (Mandarin and 20+ dialects/accents<sup>*</sup>), English, Code-Switching | [🤗](https://huggingface.co/FireRedTeam/FireRedASR2-AED) \| [🤖](https://www.modelscope.cn/models/xukaituo/FireRedASR2-AED/)|
 |FireRedVAD | 100+ languages, 20+ Chinese dialects/accents<sup>*</sup> | [🤗](https://huggingface.co/FireRedTeam/FireRedVAD) \| [🤖](https://www.modelscope.cn/models/xukaituo/FireRedVAD/)|
 |FireRedLID | 100+ languages, 20+ Chinese dialects/accents<sup>*</sup> | [🤗](https://huggingface.co/FireRedTeam/FireRedLID) \| [🤖](https://www.modelscope.cn/models/xukaituo/FireRedLID/)|
 |FireRedPunc| Chinese, English | [🤗](https://huggingface.co/FireRedTeam/FireRedPunc) \| [🤖](https://www.modelscope.cn/models/xukaituo/FireRedPunc/)|
@@ -175,6 +177,7 @@ modelscope download --model xukaituo/FireRedASR2-AED --local_dir ./pretrained_mo
 modelscope download --model xukaituo/FireRedVAD --local_dir ./pretrained_models/FireRedVAD
 modelscope download --model xukaituo/FireRedLID --local_dir ./pretrained_models/FireRedLID
 modelscope download --model xukaituo/FireRedPunc --local_dir ./pretrained_models/FireRedPunc
+modelscope download --model xukaituo/FireRedASR2-LLM --local_dir ./pretrained_models/FireRedASR2-LLM
 
 # Download via Hugging Face
 pip install -U "huggingface_hub[cli]"
@@ -182,6 +185,7 @@ huggingface-cli download FireRedTeam/FireRedASR2-AED --local-dir ./pretrained_mo
 huggingface-cli download FireRedTeam/FireRedVAD --local-dir ./pretrained_models/FireRedVAD
 huggingface-cli download FireRedTeam/FireRedLID --local-dir ./pretrained_models/FireRedLID
 huggingface-cli download FireRedTeam/FireRedPunc --local-dir ./pretrained_models/FireRedPunc
+huggingface-cli download FireRedTeam/FireRedASR2-LLM --local-dir ./pretrained_models/FireRedASR2-LLM
 ```
 
 4. Convert your audio to **16kHz 16-bit mono PCM** format if needed:
@@ -459,6 +463,7 @@ for wav_path, uttid in zip(batch_wav_path, batch_uttid):
 # {'uttid': 'hello_en', 'text': 'Hello speech.', 'sentences': [{'start_ms': 260, 'end_ms': 1820, 'text': 'Hello speech.', 'asr_confidence': 0.933, 'lang': 'en', 'lang_confidence': 0.993}], 'vad_segments_ms': [(260, 1820)], 'dur_s': 2.24, 'words': [{'start_ms': 400, 'end_ms': 960, 'text': 'hello'}, {'start_ms': 960, 'end_ms': 1666, 'text': 'speech'}], 'wav_path': 'assets/hello_en.wav'}
 ```
 
+**Note:** `FireRedASR2S` code has only been tested on Linux Ubuntu 22.04. Behavior on other Linux distributions or Windows has not been tested.
 
 
 ## FAQ
@@ -468,8 +473,9 @@ for wav_path, uttid in zip(batch_wav_path, batch_uttid):
 
 **Q: What are the input length limitations of ASR models?**
 
-- FireRedASR2-AED supports audio input up to 60s. Input longer than 60s may cause hallucination issues, and input exceeding 200s will trigger positional encoding errors.
-- FireRedASR2-LLM supports audio input up to 30s. The behavior for longer input is untested.
+- **FireRedASR2-AED** supports audio input **up to 60s**. Input longer than 60s may cause hallucination issues, and input exceeding 200s will trigger positional encoding errors.
+- **FireRedASR2-LLM** supports audio input **up to 40s**. The behavior for longer input is untested.
+- **FireRedASR2-LLM Batch Beam Search**: When performing batch beam search with FireRedASR2-LLM, even though attention masks are applied, it is recommended to ensure that the input lengths of the utterances are similar. If there are significant differences in utterance lengths, shorter utterances may experience **repetition issues**. You can either sort your dataset by length or set `batch_size` to 1 to avoid the repetition issue.
 
 
 ## Acknowledgements
